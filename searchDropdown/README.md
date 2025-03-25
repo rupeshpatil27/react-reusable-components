@@ -1,4 +1,4 @@
-# Searchable Dropdown Component for React
+# Searchable Dropdown Component
 
 ## Preview
 
