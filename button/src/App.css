@@ -1,0 +1,8 @@
+.main-container{
+    height: 100%;
+    padding: 5rem;
+    margin: 5rem;
+    display: flex;
+    justify-content: center;
+    background-color: #fff;
+}
