@@ -14,6 +14,15 @@ function App() {
         buttonText={"Click"}
         onclick={checkButton}
       />
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <CustomButton
+        buttonText={"Click"}
+        onclick={checkButton}
+        rounded={"4px"}
+      />
     </div>
   )
 }
