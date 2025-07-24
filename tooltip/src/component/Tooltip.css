@@ -1,0 +1,42 @@
+/* Tooltip.css */
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  z-index: 10;
+}
+
+.tooltip {
+  font-size: 14px;
+  background-color: #000000;
+  color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  border-radius: 24px;
+  padding: 8px 14px;
+  opacity: 0;
+  transition: top 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+    opacity 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.tooltip-container:hover .tooltip {
+  top: -30px;
+  opacity: 1;
+}
+
+.tooltip span {
+  position: relative;
+  z-index: 1;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  transform: rotate(45deg) translateX(-50%);
+  left: 50%;
+  bottom: -12px;
+  background-color: inherit;
+}
