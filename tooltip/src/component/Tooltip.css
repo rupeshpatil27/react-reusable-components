@@ -1,5 +1,5 @@
 /* Tooltip.css */
-.tooltip-container {
+/* .tooltip-container {
   position: relative;
   display: inline-block;
   z-index: 10;
@@ -39,4 +39,111 @@
   left: 50%;
   bottom: -12px;
   background-color: inherit;
+} */
+
+
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  z-index: 10;
+}
+
+.tooltip {
+  position: absolute;
+  font-size: 14px;
+  background-color: #000;
+  color: #fff;
+  border-radius: 24px;
+  padding: 8px 14px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+
+.tooltip span {
+  position: relative;
+  z-index: 1;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  background-color: inherit;
+  transform: rotate(45deg);
+}
+
+/* TOP */
+.tooltip-container:hover .tooltip-top {
+  opacity: 1;
+  transform: translate(-50%, -8px);
+}
+
+.tooltip-top {
+  bottom: 100%;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
+.tooltip-top::after {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+/* BOTTOM */
+.tooltip-container:hover .tooltip-bottom {
+  opacity: 1;
+  transform: translate(-50%, 8px);
+}
+
+.tooltip-bottom {
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
+.tooltip-bottom::after {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+/* LEFT */
+.tooltip-container:hover .tooltip-left {
+  opacity: 1;
+  transform: translate(-8px, -50%);
+}
+
+.tooltip-left {
+  right: 100%;
+  top: 50%;
+  transform: translate(0, -50%);
+}
+
+.tooltip-left::after {
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+/* RIGHT */
+.tooltip-container:hover .tooltip-right {
+  opacity: 1;
+  transform: translate(8px, -50%);
+}
+
+.tooltip-right {
+  left: 100%;
+  top: 50%;
+  transform: translate(0, -50%);
+}
+
+.tooltip-right::after {
+  top: 50%;
+  right: 100%;
+  transform: translateY(-50%) rotate(45deg);
 }
