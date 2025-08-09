@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+body{
+    color: white;
+    background-color: #23222c;
+}
+
+button {
+  @apply rounded-md bg-[#39383d] px-6 py-2 font-semibold hover:opacity-50 disabled:bg-[#423f3f] disabled:opacity-50;
+}
