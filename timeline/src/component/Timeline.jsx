@@ -1,12 +1,46 @@
-import { useRef} from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import ScrollTrigger from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const Timeline = ({ data}) => {
+const Timeline = ({ data, triggerContainerRef }) => {
   const ref = useRef(null);
   const progressLineRef = useRef(null);
+
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    if (triggerContainerRef?.current && ref.current) {
+      setIsReady(true);
+    }
+  }, [triggerContainerRef?.current]);
+
+  useGSAP(() => {
+    if (!triggerContainerRef.current || !ref.current) return;
+
+    const timelineHeight = ref.current?.getBoundingClientRect().height;
+
+    gsap.fromTo(
+      progressLineRef.current,
+      {
+        height: 0,
+      },
+      {
+        height: timelineHeight,
+        ease: "none",
+        scrollTrigger: {
+          trigger: triggerContainerRef.current,
+          start: "top 40%",
+          end: "bottom 50%",
+          scrub: true,
+          markers: false,
+        },
+      }
+    );
+
+  }, [isReady]);
 
   return (
     <div ref={ref} className="relative pb-20 w-full h-full">
@@ -43,7 +77,7 @@ const Timeline = ({ data}) => {
       <div className="absolute md:left-1 left-1 top-0 overflow-hidden w-[2px] bg-[linear-gradient(to_bottom,var(--tw-gradient-stops))] from-transparent from-[0%] via-neutral-700 to-transparent to-[99%]  [mask-image:linear-gradient(to_bottom,transparent_0%,black_10%,black_90%,transparent_100%)] h-full">
         <div
           ref={progressLineRef}
-          className="absolute h-full inset-x-0 top-0 w-[2px] bg-gradient-to-t from-purple-500 via-lavender/50 to-transparent from-[0%] via-[10%] rounded-full"
+          className="absolute inset-x-0 top-0 w-[2px] bg-gradient-to-t from-purple-500 via-lavender/50 to-transparent from-[0%] via-[10%] rounded-full"
         />
       </div>
     </div>
