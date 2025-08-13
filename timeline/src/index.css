@@ -4,10 +4,11 @@
 @theme {
   --color-white-50: #d9ecff;
   --color-black-200: #282732;
+  --color-lavender: #7a57db;
 }
 
 body {
-  background-color: #030412;
+  background-color: black;
   color: #fff;
   font-family: "Poppins", serif;
   font-weight: 400;
