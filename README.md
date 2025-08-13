@@ -8,5 +8,6 @@ A collection of reusable React components designed for flexibility, ease of use,
 - `<SearchDropDown />`
 - `<Tooltip />`
 - `<FileUpload />`
+- `<Timeline />`
 
 ---
