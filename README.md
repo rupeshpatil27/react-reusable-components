@@ -9,5 +9,6 @@ A collection of reusable React components designed for flexibility, ease of use,
 - `<Tooltip />`
 - `<FileUpload />`
 - `<Timeline />`
+- `<Alert />`
 
 ---
