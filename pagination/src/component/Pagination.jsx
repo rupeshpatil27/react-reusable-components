@@ -1,9 +1,119 @@
+import { useState, useRef, useEffect } from "react";
+
+const CustomSelectDropdown = ({
+  pageSize,
+  handlePageSizeChange,
+  customOptions,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const defaultOptions = [
+    { label: "10 / page", value: 10 },
+    { label: "20 / page", value: 20 },
+    { label: "50 / page", value: 50 },
+    { label: "100 / page", value: 100 },
+  ];
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const options =
+    Array.isArray(customOptions) && customOptions.length > 0
+      ? customOptions.map((val) => ({
+          label: `${val} / page`,
+          value: Number(val),
+        }))
+      : defaultOptions;
+
+  const selectedOption = options.find((o) => o.value === pageSize);
+
+  const handleSelect = (value) => {
+    handlePageSizeChange({ target: { value } });
+    setIsOpen(false);
+  };
+
+  return (
+    <div className="relative inline-block text-left w-30" ref={dropdownRef}>
+      <button
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen(!isOpen)}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setIsOpen(true);
+          } else if (e.key === "Escape") {
+            setIsOpen(false);
+          }
+        }}
+        className="w-full inline-flex items-center justify-between border border-[rgba(132,139,200,0.18)] rounded-lg px-3 py-1.5 text-sm font-normal text-black hover:border-blue-500 transition-all"
+      >
+        {selectedOption?.label || "Select"}
+        <span className="float-right">
+          <svg
+            viewBox="64 64 896 896"
+            focusable="false"
+            data-icon="down"
+            width="1em"
+            height="1em"
+            fill="currentColor"
+            className={`text-[#757575] transition-all duration-200 ${
+              isOpen ? " rotate-180" : " rotate-0"
+            }`}
+            aria-hidden="true"
+          >
+            <path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path>
+          </svg>
+        </span>
+      </button>
+
+      <div
+        className={`absolute z-10 mt-1 w-full bg-white rounded-lg [box-shadow:2px_3px_5px_-1px_rgba(0,0,0,0.5)]
+ transition-all duration-200 overflow-hidden ${
+   isOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
+ }`}
+      >
+        <ul className="p-1 text-sm text-black">
+          {options.map((option) => (
+            <li
+              key={option.value}
+              aria-selected={pageSize === option.value}
+              onClick={() => handleSelect(option.value)}
+              className={`cursor-pointer rounded-md px-4 py-2 ${
+                pageSize === option.value
+                  ? "bg-blue-100 font-semibold"
+                  : "hover:bg-[#f6f6f6]"
+              }`}
+            >
+              {option.label}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+};
+
 const Pagination = ({
   totalItems,
   currentPage,
   pageSize,
   onPageChange,
   onPageSizeChange,
+  showSizeChanger = false,
+  showTotal = false,
+  position = "right",
+  pageSizeOptions,
 }) => {
   const totalPages = Math.ceil(totalItems / pageSize);
 
@@ -54,20 +164,31 @@ const Pagination = ({
     onPageSizeChange(newPageSize);
   };
 
+  const alignmentClass =
+    {
+      left: "justify-start",
+      center: "justify-center",
+      right: "justify-end",
+    }[position] || "justify-end";
+
   if (totalPages === 0) return null;
 
   return (
-    <div className="flex items-center space-x-2 px-2">
-      <div className="text-sm">
-        Showing {Math.min((currentPage - 1) * pageSize + 1, totalItems)} to{" "}
-        {Math.min(currentPage * pageSize, totalItems)} of {totalItems} items
-      </div>
+    <div
+      className={`flex w-full flex-col md:flex-row items-center gap-2 text-sm ${alignmentClass}`}
+    >
+      {showTotal && (
+        <div className="">
+          Showing {Math.min((currentPage - 1) * pageSize + 1, totalItems)} to{" "}
+          {Math.min(currentPage * pageSize, totalItems)} of {totalItems} items
+        </div>
+      )}
 
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center space-x-1 md:space-x-2">
         <button
           disabled={currentPage === 1}
           onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
-          className="p-2 w-9 h-9 text-sm inline-flex items-center justify-center rounded-lg hover:bg-[rgba(132,139,200,0.18)] disabled:opacity-50 cursor-pointer"
+          className="p-2 w-9 h-9 inline-flex items-center justify-center rounded-lg hover:not-disabled:bg-[#f6f6f6] disabled:text-[#757575] cursor-pointer disabled:cursor-no-drop"
         >
           <svg
             viewBox="64 64 896 896"
@@ -84,17 +205,20 @@ const Pagination = ({
 
         {getPageNumbers().map((page, idx) =>
           page === "..." ? (
-            <span key={`ellipsis-${idx}`} className="px-2 text-sm font-bold text-[rgba(132,139,200,0.18)]">
+            <span
+              key={`ellipsis-${idx}`}
+              className="px-2 font-bold text-[#858585]"
+            >
               ...
             </span>
           ) : (
             <button
               key={`page-${page}`}
               onClick={() => handlePageChange(page)}
-              className={`p-2 w-9 h-9 text-sm inline-flex items-center justify-center rounded-lg cursor-pointer ${
+              className={`p-2 w-9 h-9 inline-flex items-center justify-center rounded-lg cursor-pointer ${
                 page === currentPage
                   ? "border border-blue-500 text-blue-500"
-                  : "text-black hover:bg-[rgba(132,139,200,0.18)]"
+                  : "text-black hover:bg-[#f6f6f6]"
               }`}
             >
               {page}
@@ -107,7 +231,7 @@ const Pagination = ({
           onClick={() =>
             handlePageChange(Math.min(currentPage + 1, totalPages))
           }
-          className="p-2 w-9 h-9 text-sm inline-flex items-center justify-center rounded-lg hover:bg-[rgba(132,139,200,0.18)] disabled:opacity-50 cursor-pointer"
+          className="p-2 w-9 h-9 inline-flex items-center justify-center rounded-lg hover:not-disabled:bg-[#f6f6f6] disabled:text-[#757575] cursor-pointer disabled:cursor-no-drop"
         >
           <svg
             viewBox="64 64 896 896"
@@ -124,17 +248,13 @@ const Pagination = ({
       </div>
 
       <div className="flex items-center">
-        <select
-          id="pageSize"
-          value={pageSize}
-          onChange={handlePageSizeChange}
-          className="border border-[rgba(132,139,200,0.18)] rounded-lg px-2 py-1 text-sm"
-        >
-          <option value={5}>5 / page</option>
-          <option value={10}>10 / page</option>
-          <option value={15}>15 / page</option>
-          <option value={20}>20 / page</option>
-        </select>
+        {showSizeChanger && (
+          <CustomSelectDropdown
+            pageSize={pageSize}
+            handlePageSizeChange={handlePageSizeChange}
+            customOptions={pageSizeOptions}
+          />
+        )}
       </div>
     </div>
   );
